@@ -71,7 +71,7 @@ def intervalo():
             pausa = print(f'\033[36mBot Pausado! Novas Pesquisa daqui a \33[1;33m{v}\033[;36m minutos')
             sl(60)
             os.system('cls')
-        elif v > 1:
+        elif v >= 1:
             pausa = print(f'\033[36mBot Pausado! Novas Pesquisa daqui a \33[1;32m{v}\033[;36m minutos')
             sl(60)
             os.system('cls')

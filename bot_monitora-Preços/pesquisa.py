@@ -5,7 +5,7 @@ while True:
     inicializacao_do_bot()
 
     data = datetime.datetime.now()
-    data = data.strftime("%d/%m/%Y")
+    data = data.strftime("%d/%m/%Y %H:%M")
 
     driver,wait = iniciarDriver()
     driver.get("https://www.apple.com/br/shop/buy-iphone")
