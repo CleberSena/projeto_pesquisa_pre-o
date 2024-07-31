@@ -8,13 +8,16 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from time import sleep as sl
 import random
+import datetime
 import openpyxl
 import os
 
-def inicializacao_do_bot():
+
+def cabecalho_do_bot():
     print(f'\033[1;34m<=>'*15)
     print('\033[33m      Iniciando o Bot')
     print(f'\033[1;34m<=>\033[;m'*15)
+
 def iniciarDriver():
     chrome_options = Options()
     '''
@@ -52,14 +55,24 @@ def iniciarDriver():
     )
     return driver, wait
 
+def inicializacao_do_bot():
+    driver,wait = iniciarDriver()
+    driver.get("https://www.apple.com/br/shop/buy-iphone")
+    sl(5)
+    return driver,wait
+
 def criarPlanilha(produto, data, valorAtual, linkProduto):
-    workbook = openpyxl.Workbook()
-    del workbook['Sheet']
-    workbook.create_sheet('Iphone 15 Pro Max')
-    sheet_ifone = workbook['Iphone 15 Pro Max']
-    sheet_ifone.append(['Produto', 'Data', 'Valor Atual', 'Link do Produto'])
-    sheet_ifone.append([produto, data, valorAtual, linkProduto])
-    workbook.save('preçosIfone15.xlsx') 
+    try:
+        workbook = openpyxl.Workbook()
+        del workbook['Sheet']
+        workbook.create_sheet('Iphone 15 Pro Max')
+        sheet_ifone = workbook['Iphone 15 Pro Max']
+        sheet_ifone.append(['Produto', 'Data', 'Valor Atual', 'Link do Produto'])
+        sheet_ifone.append([produto, data, valorAtual, linkProduto])    
+        workbook.save('preçosIfone15.xlsx') 
+        print(f'\033[;36mPlanilha \033[;31m{sheet_ifone}\033[;36m criada e salva em seus arquivos')
+    except EncodingWarning as ex:
+        print(ex)
 
 def intervalo():
     for v in range(30, -1, -1):
@@ -82,4 +95,30 @@ def intervalo():
                 os.system('cls') 
             break
 
+def format_date():
+    data = datetime.datetime.now()
+    data = data.strftime("%d/%m/%Y %H:%M")
 
+def pesquisar_produto(wait):
+    try:    
+        produto = wait.until(CondicaoExperada.visibility_of_any_elements_located((By.XPATH,'//h3[@class="rf-hcard-content-title"]')))
+        produto = produto[0].text
+        sl(1)
+        print(f'\033[;33m{produto} encontardo e pronto para ser salvo em uma planilha\033[;m')
+        sl(3)
+    except ERROR_URL as ex:
+        print(ex)
+
+    return produto
+
+def pesquisar_preco(wait, produto):
+    try:
+        preco_produto = wait.until(CondicaoExperada.visibility_of_element_located((By.XPATH,'//div//span[text()=" R$ 9.299"]')))
+        preco_produto = preco_produto.text.replace('R$','' )
+        preco_produto = int(preco_produto.replace('.', ''))
+        print(f'\033[;32mO valor do \033[;35m{produto}\033[;32m neste momento da pesquisa se encontra no valor de R${preco_produto} e será salvo na planilha\033[;m')
+        sl(3)
+    except ERROR_URL as ex:
+        print(ex)
+
+    return preco_produto
